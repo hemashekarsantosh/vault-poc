@@ -1,0 +1,42 @@
+def secrets = [
+  [path: 'ebpm/eBPM/DB', engineVersion: 2, secretValues: [
+    [envVar: 'DB', vaultKey: 'jdbc']]],
+]
+
+def configuration = [vaultUrl: 'https://vault-ha-prod.apps.esp04.sac.flex.com',  
+    vaultCredentialId: '82fd7dd0-c70d-428b-a27e-35f5b35fd873', engineVersion: 2]
+
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+    }
+    stages{   
+     
+      stage('Checkout'){
+          steps{
+              sh "rm -R vault-poc"
+              sh "git clone https://github.com/hemashekarsantosh/vault-poc.git"
+              sh "chmod -R 777 vault-poc"
+          }
+      }
+      stage('Compile'){
+          steps{
+              dir('vault-poc'){
+                  sh "pwd"
+                  sh "javac Main.java"
+              }
+          }
+      }
+      stage('Execute'){
+          steps{
+              dir('vault-poc'){
+                  withVault([configuration: configuration, vaultSecrets: secrets]) {
+                        sh "java -cp mssql-jdbc-11.2.1.jre11.jar Main.java"
+                     }
+                 }
+          }
+      }
+    }
+}
