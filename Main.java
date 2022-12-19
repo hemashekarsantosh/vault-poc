@@ -10,6 +10,7 @@ public class Main {
 
     try (Connection connection = DriverManager.getConnection(connectionUrl)) {
       // If the connection was successful, you can now perform various database operations
+      System.out.println("Connected to Database - "+connectionUrl+" is Success");
     } catch (SQLException e) {
       e.printStackTrace();
     }
