@@ -1,6 +1,6 @@
 public class EnvironmentVariableExample {
   public static void main(String[] args) {
-    String environmentVariable = System.getenv(DB_HOST);
+    String environmentVariable = System.getenv("DB_HOST");
     System.out.println(environmentVariable);
   }
 }
